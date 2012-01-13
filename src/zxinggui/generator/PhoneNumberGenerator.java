@@ -26,14 +26,17 @@ public class PhoneNumberGenerator implements GeneratorInterface {
 		layout.putConstraint(SpringLayout.EAST, panel, 5, SpringLayout.EAST, txtPhoneNumber);
 	}
 
+	@Override
 	public String getName() {
 		return "Phone Number";
 	}
 
+	@Override
 	public JPanel getPanel() {
 		return panel;
 	}
 
+	@Override
 	public String getText() throws GeneratorException {
 		String number = txtPhoneNumber.getText();
 		if (number.isEmpty())
@@ -44,8 +47,30 @@ public class PhoneNumberGenerator implements GeneratorInterface {
 		return "tel:" + number;
 	}
 
+	@Override
 	public void setFocus() {
 		txtPhoneNumber.requestFocusInWindow();
+	}
+
+	@Override
+	public int getParsingPriority() {
+		return 1;
+	}
+
+	@Override
+	public boolean parseText(String text, boolean write) {
+		String captext = text.toUpperCase();
+		if (!captext.matches("^TEL:.*$"))
+			return false;
+		
+		String phone = text.split(":")[1].trim();
+		if (!Validator.isValidPhoneNumber(phone))
+			return false;
+		
+		if (write)
+			txtPhoneNumber.setText(phone);
+		
+		return true;
 	}
 
 }

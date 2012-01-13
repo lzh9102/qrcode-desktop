@@ -3,6 +3,8 @@ package zxinggui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.Hashtable;
 
@@ -15,7 +17,7 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 @SuppressWarnings("serial")
-public class MainWindow extends JFrame implements ActionListener {
+public class MainWindow extends JFrame implements ActionListener, MouseListener {
 	
 	private static final int STARTUP_WIDTH = 800;
 	private static final int STARTUP_HEIGHT = 400;
@@ -51,11 +53,15 @@ public class MainWindow extends JFrame implements ActionListener {
 	
 	private JPanel panelRight = new JPanel();
 	private JLabel lblOutputImage = new JLabel();
+	private JPopupMenu menuImage = new JPopupMenu();
+	private JMenuItem menuItem_ViewPlainText = new JMenuItem("View Plain Text");
 	
 	private GeneratorManager generators = new GeneratorManager();
 	
 	private QRCodeWriter writer = new QRCodeWriter();
 	private QRCodeReader reader = new QRCodeReader();
+	
+	private String prevText = new String();
 	
 	public MainWindow() {
 		
@@ -103,6 +109,11 @@ public class MainWindow extends JFrame implements ActionListener {
 		
 		// Right Panel
 		panelRight.add(lblOutputImage, BorderLayout.CENTER);
+		
+		// context menu of the output image
+		menuItem_ViewPlainText.addActionListener(this);
+		menuImage.add(menuItem_ViewPlainText);
+		lblOutputImage.addMouseListener(this);
 	}
 	
 	/**
@@ -174,8 +185,11 @@ public class MainWindow extends JFrame implements ActionListener {
 		Hashtable<EncodeHintType, String> options = new Hashtable<EncodeHintType, String>();
 		options.put(EncodeHintType.CHARACTER_SET, encodings[encoding_index]);
 		
+		String text = new String();
+		
 		try {
-			BitMatrix matrix = writer.encode(currentGenerator().getText()
+			text = currentGenerator().getText();
+			BitMatrix matrix = writer.encode(text
 					, BarcodeFormat.QR_CODE, size, size, options);
 			BufferedImage image = ImageHelper.toBufferedImage(matrix);
 			lblOutputImage.setIcon(new ImageIcon(image));
@@ -184,6 +198,12 @@ public class MainWindow extends JFrame implements ActionListener {
 		} catch (GeneratorException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		}
+		
+		prevText = text;
+	}
+	
+	private void viewPlainText() {
+		JOptionPane.showMessageDialog(this, prevText);
 	}
 	
 	/**
@@ -212,7 +232,44 @@ public class MainWindow extends JFrame implements ActionListener {
 				generatorSelected(index);
 		} else if (obj == btnEncode) { // "Encode" button pressed
 			encodeButtonPressed();
+		} else if (obj == menuItem_ViewPlainText) {
+			viewPlainText();
 		}
+	}
+	
+	public void maybeShowPopup(MouseEvent e) {
+		Object src = e.getSource();
+		if (e.isPopupTrigger() && src == lblOutputImage) {
+			menuImage.show(lblOutputImage, e.getX(), e.getY());
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		maybeShowPopup(e);
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		maybeShowPopup(e);		
 	}
 	
 }

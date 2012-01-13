@@ -52,14 +52,17 @@ public class SmsGenerator implements GeneratorInterface {
 		layout.putConstraint(SOUTH, scrollPane, -5, SOUTH, panel);
 	}
 
+	@Override
 	public String getName() {
 		return "SMS";
 	}
 
+	@Override
 	public JPanel getPanel() {
 		return panel;
 	}
 
+	@Override
 	public String getText() throws GeneratorException {
 		String number = getNumberField();
 		String message = getMessageField();
@@ -84,8 +87,34 @@ public class SmsGenerator implements GeneratorInterface {
 		return txtMessage.getText();
 	}
 
+	@Override
 	public void setFocus() {
 		txtPhoneNumber.requestFocusInWindow();
+	}
+
+	@Override
+	public int getParsingPriority() {
+		return 1;
+	}
+
+	@Override
+	public boolean parseText(String text, boolean write) {
+		String captext = text.toUpperCase();
+		
+		// matches "SMSTO:[space]<phone number>[space]", space is optional
+		if (!captext.matches("^SMSTO:.+$"))
+			return false;
+		
+		String phone = captext.split(":")[1].trim(); // text after the colon
+		
+		if (!Validator.isValidPhoneNumber(phone))
+			return false;
+		
+		if (write) {
+			txtPhoneNumber.setText(phone);
+		}
+		
+		return true;
 	}
 
 }

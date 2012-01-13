@@ -12,11 +12,11 @@ public class GeneratorManager {
 	private void loadGenerators() {
 		generators.clear();
 		
-		generators.add(new ContactGenerator());
 		generators.add(new PlainTextGenerator());
 		generators.add(new PhoneNumberGenerator());
 		generators.add(new UrlGenerator());
 		generators.add(new EmailGenerator());
+		generators.add(new ContactGenerator());
 		generators.add(new SmsGenerator());
 	}
 	

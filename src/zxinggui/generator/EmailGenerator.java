@@ -25,14 +25,17 @@ public class EmailGenerator implements GeneratorInterface {
 		layout.putConstraint(SpringLayout.EAST, txtEmail, -5, SpringLayout.EAST, panel);
 	}
 
+	@Override
 	public String getName() {
 		return "E-Mail";
 	}
 
+	@Override
 	public JPanel getPanel() {
 		return panel;
 	}
 
+	@Override
 	public String getText() throws GeneratorException {
 		String uri = txtEmail.getText();
 		if (uri.isEmpty())
@@ -42,8 +45,30 @@ public class EmailGenerator implements GeneratorInterface {
 		return "mailto:" + uri;
 	}
 
+	@Override
 	public void setFocus() {
 		txtEmail.requestFocusInWindow();
+	}
+
+	@Override
+	public int getParsingPriority() {
+		return 1;
+	}
+
+	@Override
+	public boolean parseText(String text, boolean write) {
+		String captext = text.toUpperCase();
+		if (!captext.matches("^MAILTO:.*$"))
+			return false;
+		
+		String email = text.split(":")[1].trim();
+		if (!Validator.isValidEmail(email))
+			return false;
+		
+		if (write)
+			txtEmail.setText(email);
+		
+		return false;
 	}
 
 }

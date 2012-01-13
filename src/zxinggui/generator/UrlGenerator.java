@@ -27,14 +27,17 @@ public class UrlGenerator implements GeneratorInterface {
 		layout.putConstraint(SpringLayout.EAST, txtUrl, -5, SpringLayout.EAST, panel);
 	}
 
+	@Override
 	public String getName() {
 		return "URL";
 	}
 
+	@Override
 	public JPanel getPanel() {
 		return panel;
 	}
 
+	@Override
 	public String getText() throws GeneratorException {
 		String uri = txtUrl.getText();
 		if (uri.isEmpty())
@@ -43,9 +46,30 @@ public class UrlGenerator implements GeneratorInterface {
 			throw new GeneratorException("Incorrect URL", txtUrl);
 		return uri;
 	}
-
+	
+	@Override
 	public void setFocus() {
 		txtUrl.requestFocusInWindow();
+	}
+
+	@Override
+	public int getParsingPriority() {
+		return 1;
+	}
+
+	@Override
+	public boolean parseText(String text, boolean write) {
+		String url = text;
+		if (!Validator.isValidURI(url)) {
+			url = "http://" + url;
+			if (!Validator.isValidURI(url))
+				return false;				
+		}
+			
+		if (write)
+			txtUrl.setText(url);
+		
+		return true;
 	}
 
 }

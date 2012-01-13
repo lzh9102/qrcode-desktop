@@ -35,14 +35,17 @@ public class PlainTextGenerator implements GeneratorInterface {
 		layout.putConstraint(WEST, scrollPane, 5, WEST, panel);
 	}
 
+	@Override
 	public JPanel getPanel() {
 		return panel;
 	}
 
+	@Override
 	public String getName() {
 		return "Plain Text";
 	}
 
+	@Override
 	public String getText() throws GeneratorException {
 		String text = textarea.getText();
 		if (text.isEmpty())
@@ -51,7 +54,22 @@ public class PlainTextGenerator implements GeneratorInterface {
 		return text;
 	}
 
+	@Override
 	public void setFocus() {
 		textarea.requestFocusInWindow();
+	}
+
+	@Override
+	public int getParsingPriority() {
+		return 0; // always fallback to plain text
+	}
+
+	@Override
+	public boolean parseText(String text, boolean write) {
+		if (text.isEmpty())
+			return false;
+		if (write)
+			textarea.setText(text);
+		return true;
 	}
 }

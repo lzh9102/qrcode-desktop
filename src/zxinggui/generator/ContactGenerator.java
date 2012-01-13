@@ -226,4 +226,16 @@ public class ContactGenerator implements GeneratorInterface {
 		txtPhoneNumber.requestFocusInWindow();
 	}
 
+	@Override
+	public int getParsingPriority() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean parseText(String text, boolean write) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
