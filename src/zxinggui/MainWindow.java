@@ -13,6 +13,7 @@ import zxinggui.generator.*;
 
 import com.google.zxing.*;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 
@@ -56,6 +57,7 @@ public class MainWindow extends JFrame
 	private JLabel lblOutputImage = new JLabel();
 	private JPopupMenu menuImage = new JPopupMenu();
 	private JMenuItem menuItem_ViewPlainText = new JMenuItem("View Plain Text");
+	private JButton btnCapture = new JButton();
 	
 	private GeneratorManager generators = new GeneratorManager();
 	
@@ -87,13 +89,21 @@ public class MainWindow extends JFrame
 		panelRight.setLayout(new BorderLayout());
 		panelButtons.setLayout(new GridLayout());
 		
+		// Text
+		btnEncode.setText("Encode");
+		btnCapture.setText("Capture Screen");
+
+		// Layout
 		panelGenerator.setLayout(new BorderLayout());
 		cbSelectGenerator.addActionListener(this);
-		btnEncode.setText("Encode");
-		btnEncode.addActionListener(this);
 		lblOutputImage.setHorizontalAlignment(JLabel.CENTER);
 		lblOutputImage.setVerticalAlignment(JLabel.CENTER);
 		
+		// Events
+		btnEncode.addActionListener(this);
+		btnCapture.addActionListener(this);
+		
+		// Main Panel
 		add(panelMain);
 		panelMain.add(panelLeft);
 		panelMain.add(panelRight);
@@ -110,6 +120,7 @@ public class MainWindow extends JFrame
 		
 		// Right Panel
 		panelRight.add(lblOutputImage, BorderLayout.CENTER);
+		panelRight.add(btnCapture, BorderLayout.SOUTH);
 		
 		// context menu of the output image
 		menuItem_ViewPlainText.addActionListener(this);
@@ -216,6 +227,17 @@ public class MainWindow extends JFrame
 		return generators.getGenerator(index);
 	}
 	
+	private void decodeImage(BufferedImage image) {
+		LuminanceSource source = new BufferedImageLuminanceSource(image);
+		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+		try {
+			Result result = reader.decode(bitmap);
+			lblOutputImage.setIcon(new ImageIcon(image));
+			prevText = result.getText();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Failed to decode the image");
+		}
+	}
 	/* Decoding QR Code:
 	BufferedImage image = ImageHelper.captureScreen();
 	LuminanceSource source = new BufferedImageLuminanceSource(image);
@@ -236,6 +258,9 @@ public class MainWindow extends JFrame
 			encodeButtonPressed();
 		} else if (obj == menuItem_ViewPlainText) {
 			viewPlainText();
+		} else if (obj == btnCapture) { // capture screen and decode
+			ScreenCaptureWindow scw = new ScreenCaptureWindow(this);
+			scw.captureScreen();
 		}
 	}
 	
@@ -272,7 +297,7 @@ public class MainWindow extends JFrame
 
 	@Override
 	public void screenshotCaptured(BufferedImage image) {
-		
+		decodeImage(image);
 	}
 	
 }
