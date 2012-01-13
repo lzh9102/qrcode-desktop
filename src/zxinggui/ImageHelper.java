@@ -1,6 +1,7 @@
 package zxinggui;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
@@ -33,6 +34,23 @@ public final class ImageHelper {
 	   Robot robot = new Robot();
 	   BufferedImage image = robot.createScreenCapture(screenRectangle);
 	   return image;
+	}
+	
+	public static BufferedImage cropImage(BufferedImage src, int x, int y, int w, int h)
+	{
+	    BufferedImage dest = new BufferedImage(w, h, src.getType());
+	    Graphics g = dest.getGraphics();
+	    g.drawImage(src, 0, 0, w, h, x, y, x+w, y+h, null);
+	    g.dispose();
+	    return dest;
+	}
+	
+	public static BufferedImage resizeImage(BufferedImage src, int w, int h) {
+		BufferedImage dest = new BufferedImage(w, h, src.getType());
+		Graphics g = dest.getGraphics();
+		g.drawImage(src, 0, 0, w, h, null);
+		g.dispose();
+		return dest;
 	}
 	
 }

@@ -17,7 +17,8 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 @SuppressWarnings("serial")
-public class MainWindow extends JFrame implements ActionListener, MouseListener {
+public class MainWindow extends JFrame
+	implements ActionListener, MouseListener, ScreenCaptureListener {
 	
 	private static final int STARTUP_WIDTH = 800;
 	private static final int STARTUP_HEIGHT = 400;
@@ -203,7 +204,8 @@ public class MainWindow extends JFrame implements ActionListener, MouseListener 
 	}
 	
 	private void viewPlainText() {
-		JOptionPane.showMessageDialog(this, prevText);
+		if (!prevText.isEmpty())
+			JOptionPane.showMessageDialog(this, prevText);
 	}
 	
 	/**
@@ -245,22 +247,13 @@ public class MainWindow extends JFrame implements ActionListener, MouseListener 
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseClicked(MouseEvent arg0) { }
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseEntered(MouseEvent arg0) { }
 
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseExited(MouseEvent arg0) { }
 
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -270,6 +263,16 @@ public class MainWindow extends JFrame implements ActionListener, MouseListener 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		maybeShowPopup(e);		
+	}
+
+	@Override
+	public void screenshotCanceled() {
+		
+	}
+
+	@Override
+	public void screenshotCaptured(BufferedImage image) {
+		
 	}
 	
 }
