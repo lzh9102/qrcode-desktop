@@ -216,7 +216,7 @@ public class MainWindow extends JFrame
 	
 	private void viewPlainText() {
 		if (!prevText.isEmpty())
-			JOptionPane.showMessageDialog(this, prevText);
+			new ViewPlainTextWindow(this, prevText).setVisible(true);
 	}
 	
 	/**

@@ -68,7 +68,7 @@ public class EmailGenerator implements GeneratorInterface {
 		if (write)
 			txtEmail.setText(email);
 		
-		return false;
+		return true;
 	}
 
 }
