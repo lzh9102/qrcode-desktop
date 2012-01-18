@@ -234,6 +234,12 @@ public class MainWindow extends JFrame
 			Result result = reader.decode(bitmap);
 			lblOutputImage.setIcon(new ImageIcon(image));
 			prevText = result.getText();
+			
+			/* find the most appropriate handler for the text,
+			   switch to it, and fill in the fields. */
+			int generator_index = generators.findTextHandlerIndex(prevText);
+			cbSelectGenerator.setSelectedIndex(generator_index);
+			generators.getGenerator(generator_index).parseText(prevText, true);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Failed to decode the image");
 		}
