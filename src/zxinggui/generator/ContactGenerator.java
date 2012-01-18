@@ -181,14 +181,26 @@ public class ContactGenerator implements GeneratorInterface {
 		return name;
 	}
 	
+	private void setNameField(String text) {
+		txtName.setText(text);
+	}
+	
 	private String getReadingField() throws GeneratorException {
 		String reading = txtReading.getText();
 		return reading;
 	}
 	
+	private void setReadingField(String text) {
+		txtReading.setText(text);
+	}
+	
 	private String getOrgField() throws GeneratorException {
 		String org = txtOrg.getText();
 		return org;
+	}
+	
+	private void setOrgField(String text) {
+		txtOrg.setText(text);
 	}
 	
 	private String getPhoneNumberField() throws GeneratorException {
@@ -198,6 +210,10 @@ public class ContactGenerator implements GeneratorInterface {
 		return number;
 	}
 	
+	private void setPhoneNumberField(String text) {
+		txtPhoneNumber.setText(text);
+	}
+	
 	private String getEmailField() throws GeneratorException {
 		String email = txtEmail.getText();
 		if (!email.isEmpty() && !Validator.isValidEmail(email))
@@ -205,9 +221,17 @@ public class ContactGenerator implements GeneratorInterface {
 		return email;
 	}
 	
+	private void setEmailField(String text) {
+		txtEmail.setText(text);
+	}
+	
 	private String getAddressField() throws GeneratorException {
 		String addr = txtAddress.getText();
 		return addr;
+	}
+	
+	private void setAddressField(String text) {
+		txtAddress.setText(text);
 	}
 	
 	private String getWebsiteField() throws GeneratorException {
@@ -217,9 +241,17 @@ public class ContactGenerator implements GeneratorInterface {
 		return url;
 	}
 	
+	private void setWebsiteField(String text) {
+		txtWebsite.setText(text);
+	}
+	
 	private String getMemoField() throws GeneratorException {
 		String memo = txtMemo.getText();
 		return memo;
+	}
+	
+	private void setMemoField(String text) {
+		txtMemo.setText(text);
 	}
 
 	public void setFocus() {
@@ -228,14 +260,99 @@ public class ContactGenerator implements GeneratorInterface {
 
 	@Override
 	public int getParsingPriority() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 10;
 	}
 
 	@Override
 	public boolean parseText(String text, boolean write) {
-		// TODO Auto-generated method stub
+		return parseMeCard(text, write) || parseVCard(text, write);
+	}
+	
+	private boolean parseMeCard(String text, boolean write) {
+		if (!text.startsWith("MECARD:"))
+			return false;
+		
+		// Field Definitions
+		String name = null;
+		String reading = null;
+		String company = null; // not part of the standard MECARD format.
+		String phone = null;
+		String email = null;
+		String addr = null;
+		String url = null;
+		String memo = null;
+		
+		String[] fields = text.substring("MECARD:".length()).split(";");
+		
+		for (String field: fields) {
+			String[] field_split = field.split(":");
+			if (field_split.length < 2)
+				return false;
+			
+			String field_id = field_split[0];
+			String field_val = field_split[1];
+			
+			if (field_id.equals("N"))
+				name = field_val;
+			else if (field_id.equals("SOUND"))
+				reading = field_val;
+			else if (field_id.equals("ORG"))
+				company = field_val;
+			else if (field_id.equals("TEL"))
+				phone = field_val;
+			else if (field_id.equals("EMAIL"))
+				email = field_val;
+			else if (field_id.equals("ADR"))
+				addr = field_val;
+			else if (field_id.equals("URL"))
+				url = field_val;
+			else if (field_id.equals("NOTE"))
+				memo = field_val;
+			else if (field_id.trim().isEmpty()) // end of mecard
+				break;
+			else
+				return false; /* TODO: add more fields */
+		}
+		
+		// validate fields
+		if (name.isEmpty())
+			return false;
+		if (phone != null && !Validator.isValidPhoneNumber(phone))
+			return false;
+		if (email != null && !Validator.isValidEmail(email))
+			return false;
+		if (url != null && !Validator.isValidURI(url))
+			return false;
+		
+		// fill in fields
+		if (write) {
+			if (name != null)
+				setNameField(name);
+			if (reading != null)
+				setReadingField(reading);
+			if (company != null)
+				setOrgField(company);
+			if (phone != null)
+				setPhoneNumberField(phone);
+			if (email != null)
+				setEmailField(email);
+			if (addr != null)
+				setAddressField(addr);
+			if (url != null)
+				setWebsiteField(url);
+			if (memo != null)
+				setMemoField(memo);
+		}
+		
+		return true;
+	}
+	
+	private boolean parseVCard(String text, boolean write) {
+		if (!text.startsWith("BEGIN:VCARD\n"))
+			return false;
+		
 		return false;
 	}
 
 }
+
