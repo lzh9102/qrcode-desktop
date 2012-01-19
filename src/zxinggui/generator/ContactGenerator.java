@@ -253,6 +253,18 @@ public class ContactGenerator implements GeneratorInterface {
 	private void setMemoField(String text) {
 		txtMemo.setText(text);
 	}
+	
+	/** Set the selection field according to the text.
+	 * @param text this text can be FORMAT_MECARD or FORMAT_VCARD
+	 */
+	public void setFormatField(String text) {
+		for (int i=0; i<cbFormat.getItemCount(); i++) {
+			if (cbFormat.getItemAt(i).toString() == text) {
+				cbFormat.setSelectedIndex(i);
+				break;
+			}
+		}
+	}
 
 	public void setFocus() {
 		txtPhoneNumber.requestFocusInWindow();
@@ -321,7 +333,7 @@ public class ContactGenerator implements GeneratorInterface {
 			return false;
 		if (email != null && !Validator.isValidEmail(email))
 			return false;
-		/* don't validate url because there are too much possibilities */
+		/* don't validate url because there are too many unpredictable variants */
 		
 		// fill in fields
 		if (write) {
@@ -341,6 +353,7 @@ public class ContactGenerator implements GeneratorInterface {
 				setWebsiteField(url);
 			if (memo != null)
 				setMemoField(memo);
+			setFormatField(FORMAT_MECARD);
 		}
 		
 		return true;
@@ -350,7 +363,75 @@ public class ContactGenerator implements GeneratorInterface {
 		if (!text.startsWith("BEGIN:VCARD\n"))
 			return false;
 		
-		return false;
+		// Field Definitions
+		String name = null;
+		/* VCard has no "reading" field */
+		String company = null;
+		String phone = null;
+		String email = null;
+		String addr = null;
+		String url = null;
+		String memo = null;
+		
+		String[] fields = text.substring("BEGIN:VCARD\n".length()).split("\n");
+		
+		for (String field: fields) {
+			String[] field_split = field.split(":");
+			if (field_split.length < 2)
+				return false;
+			
+			String field_id = field_split[0];
+			String field_val = field_split[1];
+			
+			if (field_id.equals("N"))
+				name = field_val;
+			else if (field_id.equals("ORG"))
+				company = field_val;
+			else if (field_id.equals("TEL"))
+				phone = field_val;
+			else if (field_id.equals("EMAIL"))
+				email = field_val;
+			else if (field_id.equals("ADR"))
+				addr = field_val;
+			else if (field_id.equals("URL"))
+				url = field_val;
+			else if (field_id.equals("NOTE"))
+				memo = field_val;
+			else if (field_id.equals("END") && field_val.equals("VCARD"))
+				break; // end of VCARD
+			else
+				return false; /* TODO: add more fields */
+		}
+		
+		// validate fields
+		if (name.isEmpty())
+			return false;
+		if (phone != null && !Validator.isValidPhoneNumber(phone))
+			return false;
+		if (email != null && !Validator.isValidEmail(email))
+			return false;
+		/* don't validate url because there are too many unpredictable variants */
+		
+		// fill in fields
+		if (write) {
+			if (name != null)
+				setNameField(name);
+			if (company != null)
+				setOrgField(company);
+			if (phone != null)
+				setPhoneNumberField(phone);
+			if (email != null)
+				setEmailField(email);
+			if (addr != null)
+				setAddressField(addr);
+			if (url != null)
+				setWebsiteField(url);
+			if (memo != null)
+				setMemoField(memo);
+			setFormatField(FORMAT_VCARD);
+		}
+		
+		return true;
 	}
 
 }
