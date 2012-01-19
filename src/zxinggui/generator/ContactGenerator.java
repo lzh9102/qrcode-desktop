@@ -321,8 +321,7 @@ public class ContactGenerator implements GeneratorInterface {
 			return false;
 		if (email != null && !Validator.isValidEmail(email))
 			return false;
-		if (url != null && !Validator.isValidURI(url))
-			return false;
+		/* don't validate url because there are too much possibilities */
 		
 		// fill in fields
 		if (write) {
