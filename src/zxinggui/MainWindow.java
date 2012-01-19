@@ -3,12 +3,19 @@ package zxinggui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+
 import zxinggui.generator.*;
 
 import com.google.zxing.*;
@@ -43,6 +50,10 @@ public class MainWindow extends JFrame
 		350, 230, 120
 	};
 	
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu menuFile;
+	private JMenuItem menuFile_SaveImage;
+	
 	private JPanel panelMain = new JPanel();
 	
 	private JPanel panelLeft = new JPanel();
@@ -66,6 +77,8 @@ public class MainWindow extends JFrame
 	
 	private String prevText = new String();
 	
+	private BufferedImage generated_image = null;
+	
 	public MainWindow() {
 		
 		setupUI();
@@ -88,6 +101,16 @@ public class MainWindow extends JFrame
 		panelLeft.setLayout(new BorderLayout());
 		panelRight.setLayout(new BorderLayout());
 		panelButtons.setLayout(new GridLayout());
+		
+		// Menu Bar
+		menuFile = new JMenu("File");
+		menuFile.setMnemonic(KeyEvent.VK_F);
+		menuBar.add(menuFile);
+		menuFile_SaveImage = new JMenuItem("Save Image");
+		menuFile_SaveImage.setMnemonic(KeyEvent.VK_S);
+		menuFile_SaveImage.addActionListener(this);
+		menuFile.add(menuFile_SaveImage);
+		setJMenuBar(menuBar);
 		
 		// Text
 		btnEncode.setText("Encode");
@@ -191,6 +214,7 @@ public class MainWindow extends JFrame
 		// Set output image size
 		int size = outputSizes[cbSelectSize.getSelectedIndex()];
 		lblOutputImage.setIcon(null); // Remove existing image.
+		generated_image = null;
 		
 		// Set character encoding of the message.
 		final int encoding_index = cbSelectEncoding.getSelectedIndex();
@@ -205,6 +229,7 @@ public class MainWindow extends JFrame
 					, BarcodeFormat.QR_CODE, size, size, options);
 			BufferedImage image = ImageHelper.toBufferedImage(matrix);
 			lblOutputImage.setIcon(new ImageIcon(image));
+			generated_image = image;
 		} catch (WriterException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage());
 		} catch (GeneratorException e) {
@@ -217,6 +242,35 @@ public class MainWindow extends JFrame
 	private void viewPlainText() {
 		if (!prevText.isEmpty())
 			new ViewPlainTextWindow(this, prevText).setVisible(true);
+	}
+	
+	private void saveImage() {
+		JFileChooser fc = new JFileChooser();
+		
+		fc.addChoosableFileFilter(new FileFilter() {
+			public boolean accept(File f) {
+				return f.getName().toLowerCase().endsWith(".png") || f.isDirectory();
+			}
+			public String getDescription() {
+				return "PNG Image (*.png)";
+			}
+		});
+		
+		fc.setCurrentDirectory(new File("."));
+		fc.setDialogType(JFileChooser.SAVE_DIALOG);
+		
+		if (generated_image != null) {
+			if (fc.showDialog(this, "Save Image") == JFileChooser.APPROVE_OPTION) {
+				File file = new File(fc.getSelectedFile().getPath() + ".png");
+				try {
+					ImageIO.write(generated_image, "png", file);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(this, "Failed to save image");
+				}
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "No image to save");
+		}
 	}
 	
 	/**
@@ -233,6 +287,7 @@ public class MainWindow extends JFrame
 		try {
 			Result result = reader.decode(bitmap);
 			lblOutputImage.setIcon(new ImageIcon(image));
+			generated_image = null;
 			prevText = result.getText();
 			
 			/* find the most appropriate handler for the text,
@@ -267,6 +322,8 @@ public class MainWindow extends JFrame
 		} else if (obj == btnCapture) { // capture screen and decode
 			ScreenCaptureWindow scw = new ScreenCaptureWindow(this);
 			scw.captureScreen();
+		} else if (obj == menuFile_SaveImage) {
+			saveImage();
 		}
 	}
 	
