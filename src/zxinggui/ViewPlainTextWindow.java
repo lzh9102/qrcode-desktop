@@ -44,7 +44,7 @@ public class ViewPlainTextWindow extends JFrame
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			this.dispose();
+			this.setVisible(false);
 	}
 
 	@Override

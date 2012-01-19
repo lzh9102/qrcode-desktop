@@ -3,6 +3,8 @@ package zxinggui;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -11,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
@@ -19,9 +22,15 @@ import javax.swing.JFrame;
 public class ScreenCaptureWindow extends JFrame
 	implements MouseListener, MouseMotionListener, KeyListener {
 	
+	static final int MSG_FONT_SIZE = 40;
+	static final int SEL_BORDER_WIDTH = 5;
+	
 	ScreenCaptureListener screen_capture_listener = null;
 	BufferedImage screencapture;
+	BufferedImage screen_buffer;
 	RectArea rect = new RectArea();
+	Font msgfont = new Font(Font.MONOSPACED, Font.PLAIN, MSG_FONT_SIZE);
+	String message = "Please select a region containing qr-code.";
 	
 	public ScreenCaptureWindow(ScreenCaptureListener listener) {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -53,6 +62,10 @@ public class ScreenCaptureWindow extends JFrame
 		} catch (Exception e) {
 			return; // failed to capture screen
 		}
+		
+		screen_buffer = new BufferedImage(
+				screencapture.getWidth(), screencapture.getHeight()
+				, screencapture.getType());
 
 		setVisible(true);
 		
@@ -60,11 +73,26 @@ public class ScreenCaptureWindow extends JFrame
 	}
 	
 	public void paint(Graphics g) {
-		g.drawImage(screencapture, 0, 0, null);
-		if (rect.dimension() == 2) {
-			g.setColor(Color.RED);
-			drawThickRect(g, rect, 5);
+		// draw to the screen buffer first
+		Graphics graphics = screen_buffer.getGraphics();
+		
+		// draw background image and selection area
+		graphics.drawImage(screencapture, 0, 0, null);
+		graphics.setColor(Color.RED);
+		if (!rect.isEmpty()) {
+			drawThickRect(graphics, rect, SEL_BORDER_WIDTH);
 		}
+		
+		// draw text
+		graphics.setFont(msgfont);
+		FontMetrics fm = graphics.getFontMetrics();
+		Rectangle2D str_rect = fm.getStringBounds(message, graphics);
+		graphics.drawString(message
+				, (getWidth() - (int)str_rect.getWidth())/2
+				, (getHeight() - (int)str_rect.getHeight())/2);
+		
+		// When everything finishes, blit the screen buffer onto the screen.
+		g.drawImage(screen_buffer, 0, 0, null);
 	}
 	
 	/** Draw a rectangle with thick border.
@@ -212,13 +240,19 @@ class RectArea {
 	 * @return If the four points form a rectangle, the function returns 2.
 	 *  Otherwise, it returns 1 if they form a line and 0 if they form a point.
 	 */
-	public int dimension() {
+	private int dimension() {
 		if (x1 == x2 && y1 == y2) // degenerated into a point
 			return 0;
 		else if (x1 == x2 || y1 == y2) // degenerated into a line
 			return 1;
 		else // rectangle
 			return 2;
+	}
+	
+	/** @return whether the area of the selection region is zero.
+	 */
+	public boolean isEmpty() {
+		return dimension() < 2;
 	}
 	
 	/** Determine if the point is inside the rectangle area.
