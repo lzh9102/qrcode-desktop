@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 public class ScreenCaptureWindow extends JFrame
 	implements MouseListener, MouseMotionListener, KeyListener {
 	
-	static final int MSG_FONT_SIZE = 40;
+	static final int MSG_FONT_SIZE = 25;
 	static final int SEL_BORDER_WIDTH = 5;
 	
 	ScreenCaptureListener screen_capture_listener = null;
@@ -30,7 +30,7 @@ public class ScreenCaptureWindow extends JFrame
 	BufferedImage screen_buffer;
 	RectArea rect = new RectArea();
 	Font msgfont = new Font(Font.MONOSPACED, Font.PLAIN, MSG_FONT_SIZE);
-	String message = "Please select a region containing qr-code.";
+	String message = "Please select a region containing qr-code and press [Enter] to start decoding.";
 	
 	public ScreenCaptureWindow(ScreenCaptureListener listener) {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -178,8 +178,13 @@ public class ScreenCaptureWindow extends JFrame
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			this.setVisible(false); // cancel on ESC key
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_ESCAPE:
+			setVisible(false);
+			break;
+		case KeyEvent.VK_ENTER:
+			finishCapture();
+			break;
 		}
 	}
 
