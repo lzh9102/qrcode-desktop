@@ -46,6 +46,7 @@ public class ScreenCaptureWindow extends JFrame
 		setAlwaysOnTop(true);
 		setSize(dim.width, dim.height);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); // prevent Alt+F4 close
 		
 		// event listeners
 		addKeyListener(this);
@@ -176,10 +177,7 @@ public class ScreenCaptureWindow extends JFrame
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_ESCAPE:
-			setVisible(false);
-			break;
-		case KeyEvent.VK_ENTER:
-			finishCapture();
+			cancelCapture();
 			break;
 		}
 	}
