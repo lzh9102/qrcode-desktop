@@ -50,8 +50,6 @@ public class MainWindow extends JFrame
 		350, 230, 120
 	};
 	
-	private JMenuBar menuBar = new JMenuBar();
-	private JMenu menuFile;
 	private JMenuItem menuFile_SaveImage;
 	
 	private JPanel panelMain = new JPanel();
@@ -102,15 +100,15 @@ public class MainWindow extends JFrame
 		panelRight.setLayout(new BorderLayout());
 		panelButtons.setLayout(new GridLayout());
 		
-		// Menu Bar
-		menuFile = new JMenu("File");
-		menuFile.setMnemonic(KeyEvent.VK_F);
-		menuBar.add(menuFile);
+		// Menu Items
+		menuItem_ViewPlainText.addActionListener(this);
 		menuFile_SaveImage = new JMenuItem("Save Image");
 		menuFile_SaveImage.setMnemonic(KeyEvent.VK_S);
 		menuFile_SaveImage.addActionListener(this);
-		menuFile.add(menuFile_SaveImage);
-		setJMenuBar(menuBar);
+		
+		lblOutputImage.addMouseListener(this);
+		menuImage.add(menuItem_ViewPlainText);
+		menuImage.add(menuFile_SaveImage);
 		
 		// Text
 		btnEncode.setText("Encode");
@@ -144,11 +142,6 @@ public class MainWindow extends JFrame
 		// Right Panel
 		panelRight.add(lblOutputImage, BorderLayout.CENTER);
 		panelRight.add(btnCapture, BorderLayout.SOUTH);
-		
-		// context menu of the output image
-		menuItem_ViewPlainText.addActionListener(this);
-		menuImage.add(menuItem_ViewPlainText);
-		lblOutputImage.addMouseListener(this);
 	}
 	
 	/**
