@@ -50,7 +50,6 @@ public class MainWindow extends JFrame
 		350, 230, 120
 	};
 	
-	private JMenuItem menuFile_SaveImage;
 	
 	private JPanel panelMain = new JPanel();
 	
@@ -65,7 +64,8 @@ public class MainWindow extends JFrame
 	private JPanel panelRight = new JPanel();
 	private JLabel lblOutputImage = new JLabel();
 	private JPopupMenu menuImage = new JPopupMenu();
-	private JMenuItem menuItem_ViewPlainText = new JMenuItem("View Plain Text");
+	private JMenuItem menuImage_ViewPlainText = new JMenuItem("View Plain Text");
+	private JMenuItem menuImage_SaveImage = new JMenuItem("Save Image");
 	private JButton btnCapture = new JButton();
 	
 	private GeneratorManager generators = new GeneratorManager();
@@ -74,6 +74,8 @@ public class MainWindow extends JFrame
 	private QRCodeReader reader = new QRCodeReader();
 	
 	private String prevText = new String();
+	
+	private String prevPath = new String(".");
 	
 	private BufferedImage generated_image = null;
 	
@@ -101,14 +103,14 @@ public class MainWindow extends JFrame
 		panelButtons.setLayout(new GridLayout());
 		
 		// Menu Items
-		menuItem_ViewPlainText.addActionListener(this);
-		menuFile_SaveImage = new JMenuItem("Save Image");
-		menuFile_SaveImage.setMnemonic(KeyEvent.VK_S);
-		menuFile_SaveImage.addActionListener(this);
+		menuImage_ViewPlainText.setMnemonic(KeyEvent.VK_V);
+		menuImage_ViewPlainText.addActionListener(this);
+		menuImage_SaveImage.setMnemonic(KeyEvent.VK_S);
+		menuImage_SaveImage.addActionListener(this);
 		
 		lblOutputImage.addMouseListener(this);
-		menuImage.add(menuItem_ViewPlainText);
-		menuImage.add(menuFile_SaveImage);
+		menuImage.add(menuImage_ViewPlainText);
+		menuImage.add(menuImage_SaveImage);
 		
 		// Text
 		btnEncode.setText("Encode");
@@ -240,7 +242,7 @@ public class MainWindow extends JFrame
 	private void saveImage() {
 		JFileChooser fc = new JFileChooser();
 		
-		fc.addChoosableFileFilter(new FileFilter() {
+		fc.setFileFilter(new FileFilter() {
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(".png") || f.isDirectory();
 			}
@@ -249,17 +251,24 @@ public class MainWindow extends JFrame
 			}
 		});
 		
-		fc.setCurrentDirectory(new File("."));
+		fc.setCurrentDirectory(new File(prevPath));
 		fc.setDialogType(JFileChooser.SAVE_DIALOG);
 		
 		if (generated_image != null) {
 			if (fc.showDialog(this, "Save Image") == JFileChooser.APPROVE_OPTION) {
-				File file = new File(fc.getSelectedFile().getPath() + ".png");
+				String filename = fc.getSelectedFile().getPath();
+				if (!filename.endsWith(".png"))
+					filename += ".png";
+				
+				File file = new File(filename);
+				
 				try {
 					ImageIO.write(generated_image, "png", file);
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(this, "Failed to save image");
 				}
+				
+				prevPath = fc.getCurrentDirectory().getPath();
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "No image to save");
@@ -317,11 +326,11 @@ public class MainWindow extends JFrame
 				generatorSelected(index);
 		} else if (obj == btnEncode) { // "Encode" button pressed
 			encodeButtonPressed();
-		} else if (obj == menuItem_ViewPlainText) {
+		} else if (obj == menuImage_ViewPlainText) {
 			viewPlainText();
 		} else if (obj == btnCapture) { // capture screen and decode
 			captureScreen();
-		} else if (obj == menuFile_SaveImage) {
+		} else if (obj == menuImage_SaveImage) {
 			saveImage();
 		}
 	}
@@ -329,6 +338,8 @@ public class MainWindow extends JFrame
 	public void maybeShowPopup(MouseEvent e) {
 		Object src = e.getSource();
 		if (e.isPopupTrigger() && src == lblOutputImage) {
+			menuImage_ViewPlainText.setEnabled(!prevText.isEmpty());
+			menuImage_SaveImage.setEnabled(generated_image != null);
 			menuImage.show(lblOutputImage, e.getX(), e.getY());
 		}
 	}
