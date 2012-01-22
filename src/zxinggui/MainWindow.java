@@ -299,13 +299,20 @@ public class MainWindow extends JFrame
 			JOptionPane.showMessageDialog(this, "Failed to decode the image");
 		}
 	}
-	/* Decoding QR Code:
-	BufferedImage image = ImageHelper.captureScreen();
-	LuminanceSource source = new BufferedImageLuminanceSource(image);
-	BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-	Result result = reader.decode(bitmap);
-	*/
-
+	
+	private void captureScreen() {
+		// hide the window
+		setVisible(false);
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) { }
+		
+		ScreenCaptureWindow scw = new ScreenCaptureWindow(this);
+		scw.captureScreen();
+		/* The window will be re-enabled
+		   in screenshotCanceled() or screenshotCaptured(). */
+	}
+	
 	// GUI Events
 
 	@Override
@@ -320,8 +327,7 @@ public class MainWindow extends JFrame
 		} else if (obj == menuItem_ViewPlainText) {
 			viewPlainText();
 		} else if (obj == btnCapture) { // capture screen and decode
-			ScreenCaptureWindow scw = new ScreenCaptureWindow(this);
-			scw.captureScreen();
+			captureScreen();
 		} else if (obj == menuFile_SaveImage) {
 			saveImage();
 		}
@@ -355,11 +361,12 @@ public class MainWindow extends JFrame
 
 	@Override
 	public void screenshotCanceled() {
-		
+		setVisible(true);
 	}
 
 	@Override
 	public void screenshotCaptured(BufferedImage image) {
+		setVisible(true);
 		decodeImage(image);
 	}
 	
