@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 public class ScreenCaptureWindow extends JFrame
 	implements MouseListener, MouseMotionListener, KeyListener {
 	
-	static final int MSG_FONT_SIZE = 25;
+	static final int MSG_FONT_SIZE = 30;
 	static final int SEL_BORDER_WIDTH = 5;
 	
 	ScreenCaptureListener screen_capture_listener = null;
@@ -30,7 +30,7 @@ public class ScreenCaptureWindow extends JFrame
 	BufferedImage screen_buffer;
 	RectArea rect = new RectArea();
 	Font msgfont = new Font(Font.MONOSPACED, Font.PLAIN, MSG_FONT_SIZE);
-	String message = "Please select a region containing qr-code and press [Enter] to start decoding.";
+	String message = "Please select a region containing qr-code.";
 	
 	public ScreenCaptureWindow(ScreenCaptureListener listener) {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -132,19 +132,14 @@ public class ScreenCaptureWindow extends JFrame
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON3) { // right key
-			rect.reset();
-			this.repaint();
+			cancelCapture();
 		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			if (rect.containsXY(e.getX(), e.getY())) {
-				finishCapture();
-			} else {
-				rect.setXY1(e.getX(), e.getY());
-			}
+			rect.setXY1(e.getX(), e.getY());
 		}
 	}
 
@@ -152,7 +147,8 @@ public class ScreenCaptureWindow extends JFrame
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			rect.setXY2(e.getX(), e.getY());
-			this.repaint();
+			if (!rect.isEmpty())
+				finishCapture();
 		}
 	}
 	@Override
