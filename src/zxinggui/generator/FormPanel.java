@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
+@SuppressWarnings("serial")
 public class FormPanel extends JPanel {
 	
 	static final String NORTH = SpringLayout.NORTH;
