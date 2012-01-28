@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 ZXing authors
+ * Copyright 2012 Timothy Lin <lzh9102@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* Adapted from the ZXing Project javase client source code. */
+/* This file is adapted from the ZXing Project javase client source code. */
 
 package zxinggui;
 

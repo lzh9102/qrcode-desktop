@@ -1,0 +1,11 @@
+-----------------------------------------------------------
+NOTICES FOR QRCODE-DESKTOP
+-----------------------------------------------------------
+
+qrcode-desktop
+Copyright 2012 Timothy Lin <lzh9102@gmail.com>
+
+This software uses the zxing barcode library, which is licensed
+under the Apache License, Version 2.0. The origial software is
+avaliable from
+   http://code.google.com/p/zxing/
