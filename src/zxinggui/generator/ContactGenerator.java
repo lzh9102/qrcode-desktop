@@ -191,6 +191,10 @@ public class ContactGenerator implements GeneratorInterface {
 		String name = txtName.getText();
 		if (name.isEmpty())
 			throw new GeneratorException("Name cannot be empty.", txtName);
+		if (name.contains("\\"))
+			throw new GeneratorException("Name cannot contain '\\'.", txtName);
+		if (name.contains(";"))
+			throw new GeneratorException("Name cannot contain ';'.", txtName);
 		return name;
 	}
 	
