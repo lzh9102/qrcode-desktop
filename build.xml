@@ -1,27 +1,23 @@
 <project default="jar">
-	<property name="build" value="1.6"/>
-	<property name="source" value="1.6"/>
+	<property name="build_dir" value="build"/>
+	<property name="src_dir" value="src"/>
+	<property name="lib_dir" value="lib"/>
 	<target name="build">
-		<mkdir dir="build/classes"/>
-		<javac target="1.6" srcdir="src" destdir="build/classes">
+		<mkdir dir="${build_dir}/classes"/>
+		<javac target="1.6" srcdir="${src_dir}" destdir="${build_dir}/classes">
 			<classpath>
-				<pathelement location="lib/zxing_core.jar"/>
+				<pathelement location="${lib_dir}/zxing_core.jar"/>
 			</classpath>
 		</javac>
 	</target>
 	<target name="clean">
-		<delete dir="build/"/>
+		<delete dir="${build_dir}/"/>
 	</target>
 	<target name="jar" depends="build">
-		<mkdir dir="build/jar"/>
-		<mkdir dir="build/lib"/>
-		<unzip dest="build/lib">
-			<fileset dir="." file="lib/zxing_core.jar"/>
-		</unzip>
-		<delete dir="build/lib/META-INF"/>
-		<jar destfile="build/jar/qrcode-desktop.jar">
-			<fileset dir="build/classes"/>
-			<fileset dir="build/lib"/>
+		<mkdir dir="${build_dir}/jar"/>
+		<jar destfile="${build_dir}/jar/qrcode-desktop.jar">
+			<fileset dir="${build_dir}/classes"/>
+			<zipfileset src="${lib_dir}/zxing_core.jar"/>
 			<manifest>
 				<attribute name="Main-Class" value="zxinggui.Main"/>
 			</manifest>
