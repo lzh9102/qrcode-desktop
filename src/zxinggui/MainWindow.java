@@ -29,6 +29,8 @@ import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import zxinggui.generator.*;
@@ -41,7 +43,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame
-	implements ActionListener, MouseListener, ScreenCaptureListener {
+	implements ActionListener, MouseListener, ScreenCaptureListener
+	, ChangeListener {
 	
 	private static final int STARTUP_WIDTH = 800;
 	private static final int STARTUP_HEIGHT = 400;
@@ -65,6 +68,8 @@ public class MainWindow extends JFrame
 		350, 230, 120
 	};
 	
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu menuBar_Image = new JMenu("Image");
 	
 	private JPanel panelMain = new JPanel();
 	
@@ -124,8 +129,16 @@ public class MainWindow extends JFrame
 		menuImage_SaveImage.addActionListener(this);
 		
 		lblOutputImage.addMouseListener(this);
-		menuImage.add(menuImage_ViewPlainText);
-		menuImage.add(menuImage_SaveImage);
+		//menuImage.add(menuImage_ViewPlainText);
+		//menuImage.add(menuImage_SaveImage);
+		
+		// Menu Bar
+		menuBar_Image.setMnemonic(KeyEvent.VK_I);
+		menuBar_Image.add(menuImage_ViewPlainText);
+		menuBar_Image.add(menuImage_SaveImage);
+		menuBar_Image.addChangeListener(this);
+		menuBar.add(menuBar_Image);
+		setJMenuBar(menuBar);
 		
 		// Text
 		btnEncode.setText("Encode");
@@ -360,7 +373,7 @@ public class MainWindow extends JFrame
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) { }
+	public void mouseClicked(MouseEvent e) { }
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) { }
@@ -370,12 +383,18 @@ public class MainWindow extends JFrame
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		maybeShowPopup(e);
+		Object obj = e.getSource();
+		if (obj == lblOutputImage) {
+			maybeShowPopup(e);
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		maybeShowPopup(e);		
+		Object obj = e.getSource();
+		if (obj == lblOutputImage) {
+			maybeShowPopup(e);
+		}
 	}
 
 	@Override
@@ -387,6 +406,15 @@ public class MainWindow extends JFrame
 	public void screenshotCaptured(BufferedImage image) {
 		setVisible(true);
 		decodeImage(image);
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		Object obj = e.getSource();
+		if (obj == menuBar_Image) {
+			menuImage_ViewPlainText.setEnabled(!prevText.isEmpty());
+			menuImage_SaveImage.setEnabled(generated_image != null);
+		}
 	}
 	
 }
