@@ -177,7 +177,7 @@ public class MainWindow extends JFrame
 	 * Initialize the encoding selection combobox.
 	 */
 	private void setupEncodings() {
-		assert(encodings.length != encodingNames.length);
+		assert(encodings.length == encodingNames.length);
 		for (int i=0; i<encodings.length; i++) {
 			final int index = i;
 			Object item = new Object() {
