@@ -293,6 +293,21 @@ public class ContactGenerator implements GeneratorInterface {
 		return parseMeCard(text, write) || parseVCard(text, write);
 	}
 	
+	private String expandEscapeChars(String text) {
+		String result = "";
+		final int len = text.length();
+		for (int i=0; i<len; i++) {
+			char ch = text.charAt(i);
+			if (ch == '\\' && i < len - 1) {
+				result += text.charAt(i+1);
+				i++;
+			} else {
+				result += ch;
+			}
+		}
+		return result;
+	}
+	
 	private boolean parseMeCard(String text, boolean write) {
 		if (!text.startsWith("MECARD:"))
 			return false;
@@ -315,7 +330,13 @@ public class ContactGenerator implements GeneratorInterface {
 				return false;
 			
 			String field_id = field_split[0];
-			String field_val = field_split[1];
+			String field_val = "";
+			for (int i=1; i<field_split.length; i++) {
+				field_val += field_split[i];
+				if (i < field_split.length - 1)
+					field_val += ":";
+			}
+			field_val = expandEscapeChars(field_val);
 			
 			if (field_id.equals("N"))
 				name = field_val;
@@ -394,7 +415,13 @@ public class ContactGenerator implements GeneratorInterface {
 				return false;
 			
 			String field_id = field_split[0];
-			String field_val = field_split[1];
+			String field_val = "";
+			for (int i=1; i<field_split.length; i++) {
+				field_val += field_split[i];
+				if (i < field_split.length - 1)
+					field_val += ":";
+			}
+			field_val = expandEscapeChars(field_val);
 			
 			if (field_id.equals("N"))
 				name = field_val;
