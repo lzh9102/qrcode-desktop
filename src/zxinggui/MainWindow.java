@@ -32,6 +32,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.OptionPaneUI;
 
 import zxinggui.generator.*;
 
@@ -70,6 +71,7 @@ public class MainWindow extends JFrame
 	
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu menuBar_Image = new JMenu("Image");
+	private JMenu menuBar_About = new JMenu("About");
 	
 	private JPanel panelMain = new JPanel();
 	
@@ -87,6 +89,7 @@ public class MainWindow extends JFrame
 	private JMenuItem menuImage_ViewPlainText = new JMenuItem("View Plain Text");
 	private JMenuItem menuImage_SaveImage = new JMenuItem("Save Image");
 	private JButton btnCapture = new JButton();
+	private JMenuItem menuAbout_About = new JMenuItem("About This Software");
 	
 	private GeneratorManager generators = new GeneratorManager();
 	
@@ -138,11 +141,18 @@ public class MainWindow extends JFrame
 		menuBar_Image.add(menuImage_SaveImage);
 		menuBar_Image.addChangeListener(this);
 		menuBar.add(menuBar_Image);
+		menuBar_About.setMnemonic(KeyEvent.VK_A);
+		menuAbout_About.setMnemonic(KeyEvent.VK_A);
+		menuAbout_About.addActionListener(this);
+		menuBar_About.add(menuAbout_About);
+		menuBar.add(menuBar_About);
 		setJMenuBar(menuBar);
 		
 		// Text
 		btnEncode.setText("Encode");
+		btnEncode.setToolTipText("Encode qr-code from the given information");
 		btnCapture.setText("Capture Screen");
+		btnCapture.setToolTipText("Decode qr-code from screenshot.");
 
 		// Layout
 		panelGenerator.setLayout(new BorderLayout());
@@ -303,6 +313,17 @@ public class MainWindow extends JFrame
 		}
 	}
 	
+	private void showAboutDialog() {
+		String msg = 
+				  "QRCode Desktop, Copyright 2012 Timothy Lin <lzh9102@gmail.com>\n"
+				+ "\n"
+				+ "This program is free software licensed under the \n"
+				+ "Apache Lincense Version 2.\n\n"
+				+ "For more information, please see the project page: \n"
+				+ "http://code.google.com/p/qrcode-desktop/" + "\n";
+		JOptionPane.showMessageDialog(this, msg, "QRCode Desktop", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
 	/**
 	 * @return the current selected generator
 	 */
@@ -360,6 +381,8 @@ public class MainWindow extends JFrame
 			captureScreen();
 		} else if (obj == menuImage_SaveImage) {
 			saveImage();
+		} else if (obj == menuAbout_About) {
+			showAboutDialog();
 		}
 	}
 	
