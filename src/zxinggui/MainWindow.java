@@ -84,7 +84,7 @@ public class MainWindow extends JFrame
 	private JButton btnEncode = new JButton();
 	
 	private JPanel panelRight = new JPanel();
-	private JLabel lblOutputImage = new JLabel();
+	private ImageDisplay imgDisplay = new ImageDisplay();
 	private JPopupMenu menuImage = new JPopupMenu();
 	private JMenuItem menuImage_ViewPlainText = new JMenuItem("View Plain Text");
 	private JMenuItem menuImage_SaveImage = new JMenuItem("Save Image");
@@ -131,10 +131,6 @@ public class MainWindow extends JFrame
 		menuImage_SaveImage.setMnemonic(KeyEvent.VK_S);
 		menuImage_SaveImage.addActionListener(this);
 		
-		lblOutputImage.addMouseListener(this);
-		//menuImage.add(menuImage_ViewPlainText);
-		//menuImage.add(menuImage_SaveImage);
-		
 		// Menu Bar
 		menuBar_Image.setMnemonic(KeyEvent.VK_I);
 		menuBar_Image.add(menuImage_ViewPlainText);
@@ -157,9 +153,7 @@ public class MainWindow extends JFrame
 		// Layout
 		panelGenerator.setLayout(new BorderLayout());
 		cbSelectGenerator.addActionListener(this);
-		lblOutputImage.setHorizontalAlignment(JLabel.CENTER);
-		lblOutputImage.setVerticalAlignment(JLabel.CENTER);
-		
+
 		// Events
 		btnEncode.addActionListener(this);
 		btnCapture.addActionListener(this);
@@ -180,7 +174,7 @@ public class MainWindow extends JFrame
 		panelButtons.add(btnEncode);
 		
 		// Right Panel
-		panelRight.add(lblOutputImage, BorderLayout.CENTER);
+		panelRight.add(imgDisplay);
 		panelRight.add(btnCapture, BorderLayout.SOUTH);
 	}
 	
@@ -246,7 +240,7 @@ public class MainWindow extends JFrame
 		
 		// Set output image size
 		int size = outputSizes[cbSelectSize.getSelectedIndex()];
-		lblOutputImage.setIcon(null); // Remove existing image.
+		imgDisplay.setImage(null); // Remove existing image.
 		generated_image = null;
 		
 		// Set character encoding of the message.
@@ -261,7 +255,7 @@ public class MainWindow extends JFrame
 			BitMatrix matrix = writer.encode(text
 					, BarcodeFormat.QR_CODE, size, size, options);
 			BufferedImage image = ImageHelper.toBufferedImage(matrix);
-			lblOutputImage.setIcon(new ImageIcon(image));
+			imgDisplay.setImage(image);
 			generated_image = image;
 		} catch (WriterException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage());
@@ -337,7 +331,7 @@ public class MainWindow extends JFrame
 		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 		try {
 			Result result = reader.decode(bitmap);
-			lblOutputImage.setIcon(new ImageIcon(image));
+			imgDisplay.setImage(image);
 			generated_image = null;
 			prevText = result.getText();
 			
@@ -388,10 +382,10 @@ public class MainWindow extends JFrame
 	
 	public void maybeShowPopup(MouseEvent e) {
 		Object src = e.getSource();
-		if (e.isPopupTrigger() && src == lblOutputImage) {
+		if (e.isPopupTrigger() && src == imgDisplay) {
 			menuImage_ViewPlainText.setEnabled(!prevText.isEmpty());
 			menuImage_SaveImage.setEnabled(generated_image != null);
-			menuImage.show(lblOutputImage, e.getX(), e.getY());
+			menuImage.show(imgDisplay, e.getX(), e.getY());
 		}
 	}
 
@@ -407,7 +401,7 @@ public class MainWindow extends JFrame
 	@Override
 	public void mousePressed(MouseEvent e) {
 		Object obj = e.getSource();
-		if (obj == lblOutputImage) {
+		if (obj == imgDisplay) {
 			maybeShowPopup(e);
 		}
 	}
@@ -415,7 +409,7 @@ public class MainWindow extends JFrame
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		Object obj = e.getSource();
-		if (obj == lblOutputImage) {
+		if (obj == imgDisplay) {
 			maybeShowPopup(e);
 		}
 	}
