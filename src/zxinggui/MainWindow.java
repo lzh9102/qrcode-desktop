@@ -109,7 +109,7 @@ public class MainWindow extends JFrame
 		setupEncodings();
 		setupOutputSizeSelection();
 		
-		setTitle("Main Window");
+		setTitle("QRCode Desktop");
 		setSize(STARTUP_WIDTH, STARTUP_HEIGHT);
 		setMinimumSize(new Dimension(getWidth(), getHeight()));
 		setLocationRelativeTo(null);
