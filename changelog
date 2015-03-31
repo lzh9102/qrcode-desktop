@@ -1,0 +1,13 @@
+version 0.1.0-SNAPSHOT
+
+- migrate to maven project structure
+- move project home to Github
+
+mercurial 48e27e9ce870 (2012-02-05):
+
+- added about dialog in the menu bar
+- auto resize the displayed image while preserving its aspect ratio
+
+mercurial 7b05b721a113 (2012-01-28):
+
+- initial release
