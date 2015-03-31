@@ -9,6 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <zxing.core.version>1.7</zxing.core.version>
+        <exec.maven.version>1.3.2</exec.maven.version>
         <maven.shade.version>2.3</maven.shade.version>
         <maven.jar.version>2.4</maven.jar.version>
         <mave.compiler.version>2.3.2</mave.compiler.version>
@@ -18,6 +19,11 @@
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
             <version>${zxing.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>${exec.maven.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -60,7 +66,22 @@
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.maven.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>zxinggui.Main</mainClass>
+                    <killAfter>-1</killAfter>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
