@@ -6,8 +6,13 @@ To build **qrcode-desktop**, you need following software installed on your syste
 **steps to build**
 
   - open a terminal and `cd` to the project directory
-  - type `mvn package`
+  - type `mvn clean package`
   - if the build was successful, the executable Java archive is stored in `target/`
+
+**running from project directory**
+
+  - open a terminal and `cd` to the project directory
+  - type `mvn clean compile exec:java`
 
 **running the jar**
 
