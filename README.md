@@ -6,6 +6,11 @@ library. It resembles the online
 [QR Code Generator from the ZXing Project](http://zxing.appspot.com/generator/).
 It can also decode qrcode from screen captures.
 
+## Screenshots
+
+![Main Window](https://lzh9102.github.io/qrcode-desktop/screenshots/mainwindow.jpg)
+![Screen Capture](https://lzh9102.github.io/qrcode-desktop/screenshots/capture.jpg)
+
 ## Building
 
 Before building qrcode-desktop, the following packages must be installed on
